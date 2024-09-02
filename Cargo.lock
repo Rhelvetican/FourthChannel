@@ -6,6 +6,7 @@ version = 3
 name = "FourthChannel"
 version = "0.1.0"
 dependencies = [
+ "libjsonutils",
  "rusqlite",
  "serde",
  "serde_json",
@@ -603,6 +604,16 @@ name = "libc"
 version = "0.2.158"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439"
+
+[[package]]
+name = "libjsonutils"
+version = "0.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6fed43c377d0c7abc46a6d5328631f351b89f6b1326a6bf741741fd15945b705"
+dependencies = [
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "libsqlite3-sys"
