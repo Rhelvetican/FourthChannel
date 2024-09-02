@@ -16,6 +16,8 @@ async fn main() -> Result<()> {
         Err(_) => {
             let def_cfg = Config::default();
             let _ = write_json(CONFIG_PATH, &def_cfg);
+
+            println!("No config file found. Generated default config file.");
             return Ok(());
         }
     };
