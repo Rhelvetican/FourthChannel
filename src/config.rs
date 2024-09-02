@@ -1,6 +1,9 @@
-use std::path::PathBuf;
+use std::{fs::File, io::BufReader, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
+use serde_json::from_reader;
+
+use crate::{utils::Result, CONFIG_PATH};
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub struct Config {
@@ -9,6 +12,14 @@ pub struct Config {
     pub database: DatabaseConfig,
     pub policies: Policies,
     pub media: MediaConfig,
+}
+
+impl Config {
+    pub fn load() -> Result<Self> {
+        let f = File::open(CONFIG_PATH)?;
+        let rdr = BufReader::new(f);
+        from_reader(rdr).map_err(|e| e.into())
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]

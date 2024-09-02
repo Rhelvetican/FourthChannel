@@ -1,4 +1,4 @@
-use std::error::Error as StdErr;
+use std::{error::Error as StdErr, result::Result as StdRes};
 
 pub type Error = Box<dyn StdErr + Send + Sync>;
-pub type HandlerResult<T> = Result<T, Error>;
+pub type Result<T> = StdRes<T, Error>;

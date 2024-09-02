@@ -1,1 +1,3 @@
-use rusqlite::Connection;
+use rusqlite::C;
+
+const MIGRATIONS: &[&str] = &[];

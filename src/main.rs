@@ -1,25 +1,24 @@
 use config::Config;
-use utils::HandlerResult;
+use libjsonutils::file::write_json;
+use utils::Result;
 
 mod config;
+mod core;
 mod database;
 mod utils;
 
+const CONFIG_PATH: &str = "./config/config.json";
+
 #[tokio::main]
-async fn main() -> HandlerResult<()> {
-    let cfg = Config::default();
+async fn main() -> Result<()> {
+    let cfg = match Config::load() {
+        Ok(cfg) => cfg,
+        Err(_) => {
+            let def_cfg = Config::default();
+            let _ = write_json(CONFIG_PATH, &def_cfg);
+            return Ok(());
+        }
+    };
 
     Ok(())
-}
-
-#[cfg(test)]
-mod test {
-    use libjsonutils::file::write_json;
-
-    use crate::config::Config;
-
-    #[test]
-    fn default_config() {
-        write_json("./config/config.json", Config::default()).unwrap();
-    }
 }
