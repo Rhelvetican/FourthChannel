@@ -1,12 +1,13 @@
 use config::Config;
 use database::Database;
 use libjsonutils::file::write_json;
-use teloxide::Bot;
+use teloxide::{prelude::Dispatcher, Bot};
 use utils::Result;
 
 mod config;
 mod core;
 mod database;
+mod handler;
 mod utils;
 
 const CONFIG_PATH: &str = "./config/config.json";
@@ -26,6 +27,12 @@ async fn main() -> Result<()> {
 
     let db = Database::open(&cfg.database.database_file)?;
     let bot = Bot::new(&cfg.telegram.token);
+
+    Dispatcher::builder(bot, handler::handlers())
+        .enable_ctrlc_handler()
+        .build()
+        .dispatch()
+        .await;
 
     Ok(())
 }
