@@ -1,6 +1,8 @@
 use config::Config;
+use database::Database;
 use libjsonutils::file::write_json;
-use utils::Result;
+use teloxide::Bot;
+use utils::{Log, Result};
 
 mod config;
 mod core;
@@ -21,6 +23,10 @@ async fn main() -> Result<()> {
             return Ok(());
         }
     };
+
+    let mut log = Log::new().await;
+    let db = Database::open(&cfg.database.database_file)?;
+    let bot = Bot::new(&cfg.telegram.token);
 
     Ok(())
 }

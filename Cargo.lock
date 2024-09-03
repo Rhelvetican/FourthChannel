@@ -4,12 +4,13 @@ version = 3
 
 [[package]]
 name = "FourthChannel"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "libjsonutils",
  "rusqlite",
  "serde",
  "serde_json",
+ "serde_rusqlite",
  "teloxide",
  "tokio",
 ]
@@ -1036,6 +1037,16 @@ dependencies = [
  "itoa",
  "memchr",
  "ryu",
+ "serde",
+]
+
+[[package]]
+name = "serde_rusqlite"
+version = "0.36.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b741cc5ef185cd96157e762c3bba743c4e94c8dc6af0edb053c48d2b3c27e691"
+dependencies = [
+ "rusqlite",
  "serde",
 ]
 
