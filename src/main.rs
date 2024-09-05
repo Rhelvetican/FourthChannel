@@ -1,12 +1,11 @@
 use config::Config;
-use database::Database;
 use libjsonutils::file::write_json;
-use teloxide::{prelude::Dispatcher, Bot};
+use teloxide::{dptree::deps, prelude::Dispatcher, Bot};
 use utils::Result;
 
 mod config;
 mod core;
-mod database;
+mod db;
 mod handler;
 mod utils;
 
@@ -25,10 +24,10 @@ async fn main() -> Result<()> {
         }
     };
 
-    let db = Database::open(&cfg.database.database_file)?;
     let bot = Bot::new(&cfg.telegram.token);
 
     Dispatcher::builder(bot, handler::handlers())
+        .dependencies(deps![])
         .enable_ctrlc_handler()
         .build()
         .dispatch()
