@@ -7,6 +7,7 @@ mod app;
 mod config;
 mod db;
 mod handler;
+mod modules;
 mod utils;
 
 const CONFIG_PATH: &str = "./config/config.json";
