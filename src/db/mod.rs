@@ -11,6 +11,7 @@ use std::{
 use self::threadworks::DatabaseThreadWork;
 
 use rusqlite::Connection;
+use threadworks::AnyDatabaseThreadWork;
 use tokio::{
     runtime::Handle,
     select,
@@ -62,7 +63,7 @@ impl Database {
     }
 
     pub async fn enqueue<F: FnOnce(&mut Connection) + Send + 'static>(&self, f: F) -> Result<()> {
-        let tw = AnyDbTw::new(f);
+        let tw = AnyDatabaseThreadWork::new(f);
 
         self.inner
             .work_tx
@@ -168,36 +169,9 @@ impl DbThread {
                 if let Some(mut work) = maybe_work {
                     work.perform(&mut self.conn);
                 } else {
-                    // No more work to perform, the thread is requested to terminate.
                     self.shutdown = true;
                 }
             }
         };
-    }
-}
-
-struct AnyDbTw<F>
-where
-    F: FnOnce(&mut Connection) + Send,
-{
-    f: Option<F>,
-}
-
-impl<F> AnyDbTw<F>
-where
-    F: FnOnce(&mut Connection) + Send,
-{
-    fn new(f: F) -> Self {
-        Self { f: Some(f) }
-    }
-}
-
-impl<F> DatabaseThreadWork for AnyDbTw<F>
-where
-    F: FnOnce(&mut Connection) + Send,
-{
-    fn perform(&mut self, conn: &mut Connection) {
-        let f = self.f.take().unwrap();
-        f(conn)
     }
 }

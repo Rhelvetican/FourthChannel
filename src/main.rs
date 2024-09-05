@@ -3,8 +3,8 @@ use libjsonutils::file::write_json;
 use teloxide::{dptree::deps, prelude::Dispatcher, Bot};
 use utils::Result;
 
+mod app;
 mod config;
-mod core;
 mod db;
 mod handler;
 mod utils;
@@ -15,13 +15,7 @@ const CONFIG_PATH: &str = "./config/config.json";
 async fn main() -> Result<()> {
     let cfg = match Config::load() {
         Ok(cfg) => cfg,
-        Err(_) => {
-            let def_cfg = Config::default();
-            let _ = write_json(CONFIG_PATH, &def_cfg);
-
-            println!("No config file found. Generated default config file.");
-            return Ok(());
-        }
+        Err(_) => Config::init(),
     };
 
     let bot = Bot::new(&cfg.telegram.token);

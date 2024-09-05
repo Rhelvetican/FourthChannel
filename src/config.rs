@@ -1,5 +1,6 @@
 use std::{fs::File, io::BufReader, path::PathBuf};
 
+use libjsonutils::file::write_json;
 use serde::{Deserialize, Serialize};
 use serde_json::from_reader;
 
@@ -19,6 +20,14 @@ impl Config {
         let f = File::open(CONFIG_PATH)?;
         let rdr = BufReader::new(f);
         from_reader(rdr).map_err(|e| e.into())
+    }
+
+    pub fn init() -> Self {
+        let def_cfg = Config::default();
+        let _ = write_json(CONFIG_PATH, &def_cfg);
+
+        println!("No config file found. Generated default config file.");
+        def_cfg
     }
 }
 

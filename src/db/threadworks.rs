@@ -4,7 +4,7 @@ pub(crate) trait DatabaseThreadWork: Send {
     fn perform(&mut self, conn: &mut Connection);
 }
 
-struct AnyDatabaseThreadWork<F>
+pub(super) struct AnyDatabaseThreadWork<F>
 where
     F: FnOnce(&mut Connection) + Send,
 {
@@ -15,7 +15,7 @@ impl<F> AnyDatabaseThreadWork<F>
 where
     F: FnOnce(&mut Connection) + Send,
 {
-    fn new(f: F) -> Self {
+    pub(super) fn new(f: F) -> Self {
         Self { f: Some(f) }
     }
 }
