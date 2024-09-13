@@ -9,14 +9,16 @@ use sea_query::{ColumnDef, Iden, SqliteQueryBuilder, Table};
 use crate::util::Res;
 
 pub(crate) trait DatabaseProvider {
-    fn get_connection(self) -> Res<Connection>;
+    fn get_connection(self) -> Res<(Connection, bool)>;
 }
 
 pub struct InMemProvider;
 
 impl DatabaseProvider for InMemProvider {
-    fn get_connection(self) -> Res<Connection> {
-        Connection::open_in_memory().map_err(|e| e.into())
+    fn get_connection(self) -> Res<(Connection, bool)> {
+        Connection::open_in_memory()
+            .map_err(|e| e.into())
+            .map(|conn| (conn, true))
     }
 }
 
@@ -29,10 +31,12 @@ impl<P: AsRef<Path>> InFileProvider<P> {
 }
 
 impl<P: AsRef<Path>> DatabaseProvider for InFileProvider<P> {
-    fn get_connection(self) -> Res<Connection> {
+    fn get_connection(self) -> Res<(Connection, bool)> {
         let InFileProvider(path) = self;
 
-        Connection::open(path).map_err(|e| e.into())
+        Connection::open(path)
+            .map_err(|e| e.into())
+            .map(|conn| (conn, true))
     }
 }
 
@@ -56,9 +60,11 @@ pub struct Database {
 
 impl Database {
     pub fn from_provider<Provider: DatabaseProvider>(provider: Provider) -> Res<Self> {
-        Ok(Self {
-            conn: provider.get_connection()?,
-        })
+        let (conn, backup) = provider.get_connection()?;
+
+        if backup {}
+
+        Ok(Self { conn })
     }
 
     pub fn migrations(&self) -> Res<()> {

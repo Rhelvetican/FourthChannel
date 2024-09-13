@@ -49,7 +49,7 @@ pub struct Policies {
 #[serde(rename_all = "camelCase")]
 pub struct TelegramConfig {
     pub api_hash: String,
-    pub api_id: i64,
+    pub api_id: u64,
     pub token: String,
     pub username: String,
 }
@@ -73,5 +73,15 @@ impl Config {
         def.serialize(&mut ser)?;
 
         Ok(())
+    }
+
+    pub fn load_or_init() -> Config {
+        match Config::load() {
+            Ok(cfg) => cfg,
+            Err(_) => {
+                let _ = Config::init();
+                Config::default()
+            }
+        }
     }
 }

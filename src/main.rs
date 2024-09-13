@@ -1,6 +1,11 @@
+use std::sync::Arc;
+
 use config::Config;
 use db::{Database, InFileProvider, InMemProvider};
-use teloxide::Bot;
+use teloxide::{
+    prelude::{DependencyMap, Dispatcher},
+    Bot,
+};
 use util::Res;
 
 mod config;
@@ -9,6 +14,8 @@ mod util;
 
 #[tokio::main]
 async fn main() -> Res<()> {
+    pretty_env_logger::init();
+
     let cfg = match Config::load() {
         Ok(cfg) => cfg,
         Err(e) => {
@@ -19,6 +26,8 @@ async fn main() -> Res<()> {
         }
     };
 
+    let cfg = Arc::new(cfg);
+
     let db = if !cfg.database.database_file.is_empty() {
         Database::from_provider(InFileProvider::new(&*cfg.database.database_file))
     } else {
@@ -28,6 +37,9 @@ async fn main() -> Res<()> {
     db.migrations()?;
 
     let bot = Bot::new(&cfg.telegram.token);
+
+    let mut deps = DependencyMap::new();
+    deps.insert(cfg);
 
     Ok(())
 }
