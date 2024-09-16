@@ -3,7 +3,7 @@ use std::fs::{create_dir, exists, File};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_reader, ser::PrettyFormatter, Serializer};
 
-use crate::util::Res;
+use crate::util::Result;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct Config {
@@ -55,11 +55,11 @@ pub struct TelegramConfig {
 }
 
 impl Config {
-    pub fn load() -> Res<Config> {
+    pub fn load() -> Result<Config> {
         Ok(from_reader(File::open("./config/config.json")?)?)
     }
 
-    pub fn init() -> Res<()> {
+    pub fn init() -> Result<()> {
         if !exists("./config/")? {
             create_dir("./config/")?
         }

@@ -1,19 +1,22 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use config::Config;
 use db::{Database, InFileProvider, InMemProvider};
+
+use handler::handler;
 use teloxide::{
     prelude::{DependencyMap, Dispatcher},
     Bot,
 };
-use util::Res;
+use util::Result;
 
 mod config;
 mod db;
+mod handler;
 mod util;
 
 #[tokio::main]
-async fn main() -> Res<()> {
+async fn main() -> Result<()> {
     pretty_env_logger::init();
 
     let cfg = match Config::load() {
@@ -37,9 +40,18 @@ async fn main() -> Res<()> {
     db.migrations()?;
 
     let bot = Bot::new(&cfg.telegram.token);
+    let db = Arc::new(Mutex::new(db));
 
     let mut deps = DependencyMap::new();
     deps.insert(cfg);
+    deps.insert(db);
+
+    Dispatcher::builder(bot, handler())
+        .dependencies(deps)
+        .enable_ctrlc_handler()
+        .build()
+        .dispatch()
+        .await;
 
     Ok(())
 }

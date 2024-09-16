@@ -6,19 +6,17 @@ use std::{
 use rusqlite::{params, Connection};
 use sea_query::{ColumnDef, Iden, SqliteQueryBuilder, Table};
 
-use crate::util::Res;
+use crate::util::Result;
 
 pub(crate) trait DatabaseProvider {
-    fn get_connection(self) -> Res<(Connection, bool)>;
+    fn get_connection(self) -> Result<Connection>;
 }
 
 pub struct InMemProvider;
 
 impl DatabaseProvider for InMemProvider {
-    fn get_connection(self) -> Res<(Connection, bool)> {
-        Connection::open_in_memory()
-            .map_err(|e| e.into())
-            .map(|conn| (conn, true))
+    fn get_connection(self) -> Result<Connection> {
+        Connection::open_in_memory().map_err(|e| e.into())
     }
 }
 
@@ -31,12 +29,10 @@ impl<P: AsRef<Path>> InFileProvider<P> {
 }
 
 impl<P: AsRef<Path>> DatabaseProvider for InFileProvider<P> {
-    fn get_connection(self) -> Res<(Connection, bool)> {
+    fn get_connection(self) -> Result<Connection> {
         let InFileProvider(path) = self;
 
-        Connection::open(path)
-            .map_err(|e| e.into())
-            .map(|conn| (conn, true))
+        Connection::open(path).map_err(|e| e.into())
     }
 }
 
@@ -59,15 +55,13 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn from_provider<Provider: DatabaseProvider>(provider: Provider) -> Res<Self> {
-        let (conn, backup) = provider.get_connection()?;
-
-        if backup {}
+    pub fn from_provider<Provider: DatabaseProvider>(provider: Provider) -> Result<Self> {
+        let conn = provider.get_connection()?;
 
         Ok(Self { conn })
     }
 
-    pub fn migrations(&self) -> Res<()> {
+    pub fn migrations(&self) -> Result<()> {
         let migrations = Table::create()
             .if_not_exists()
             .table(Posts::Table)
