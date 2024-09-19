@@ -3,21 +3,6 @@
 version = 3
 
 [[package]]
-name = "FourthChannel"
-version = "0.2.0"
-dependencies = [
- "pretty_env_logger",
- "rusqlite",
- "sea-query",
- "sea-query-rusqlite",
- "serde",
- "serde_json",
- "sha3",
- "teloxide",
- "tokio",
-]
-
-[[package]]
 name = "addr2line"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -359,6 +344,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13624c2627564efccf4934284bdd98cbaa14e79b0b5a141218e507b3a823456"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "fourth_channel"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "pretty_env_logger",
+ "rusqlite",
+ "sea-query",
+ "sea-query-rusqlite",
+ "serde",
+ "serde_json",
+ "sha3",
+ "teloxide",
+ "tokio",
 ]
 
 [[package]]
